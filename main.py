@@ -48,9 +48,12 @@ def budget_status():
 def group_sum_spending_by_category ():
     # group by category
     grouped_by_category = df.groupby('category')
-    sum_by_category = grouped_by_category['amount'].sum()
-    # print(sum_by_category)
-    return sum_by_category
+    sum_by_category= grouped_by_category['amount'].sum()
+    
+    # Convert the Series to a DataFrame and rename the column
+    table_result = sum_by_category.reset_index() 
+    table_result.columns=['category', 'total_amount']
+    return table_result
     
 # print(group_sum_spending_by_category())
 
@@ -61,3 +64,23 @@ def top_5_expenses() :
     return sorted_expenses[['amount', 'description','category']]
 
 # print(top_5_expenses())
+
+# VISUALIZATION - pie chart
+import matplotlib.pyplot as plt
+
+def pie_chart_spending_by_category():
+    group_by_category = group_sum_spending_by_category()
+    result_table = group_by_category.reset_index()
+    result_table["percentage"] = abs(result_table['total_amount']) / abs(df['amount'].sum() ) * 100
+    # print(result_table)
+    # create pie chart
+    plt.figure(figsize=(10,6))
+    plt.pie(result_table['percentage'], labels=result_table['category'],autopct='%1.1f%%', startangle=90)
+    
+    #Equal aspect ratio ensures that pie chart is circular
+    plt.axis('equal') 
+    plt.show()
+    return
+    
+    
+print(pie_chart_spending_by_category())
